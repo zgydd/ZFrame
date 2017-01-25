@@ -47,9 +47,12 @@ foreach ($registerCenter as $register) {
 //    $data->serviceId = 0;
 //    $data->serviceName = 'sample';
 //    $data->serviceIp = $localIp;
-    $data = ["serviceId" => 0, "serviceName" => 'sample', "serviceIp" => $localIp];
+    $data = ["serviceId" => 'Z_SRV_0', 
+             "serviceName" => 'sample', 
+             "serviceIp" => $localIp, 
+             "servicePort" => $objConst->getServicePort()];
 //    echo var_dump($data);
-    $ch = curl_init(); //初始化curl
+    $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_TIMEOUT, 2);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -63,5 +66,5 @@ foreach ($registerCenter as $register) {
 }
 
 //echo $myPort;
-?>
+
 

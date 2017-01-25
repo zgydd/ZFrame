@@ -30,4 +30,3 @@ echo json_encode($result);
 //echo '<br/>##################ServiceLine#################<br/>';
 
 $con = NULL;
-?>

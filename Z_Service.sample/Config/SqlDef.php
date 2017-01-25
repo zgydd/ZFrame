@@ -20,4 +20,3 @@ define('sample.select.getInner', <<<SQL
         M_USER ON (M_PRODUCT.user_id = M_USER.id)
 SQL
 );
-?>
