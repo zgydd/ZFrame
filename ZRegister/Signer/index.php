@@ -10,8 +10,11 @@ $postData = (array) json_decode($ZData);
 
 //$content = '';
 //$content .= $postData['serviceId'] . ',' . $postData['serviceName'] . ',' . $postData['serviceIp'];
-if (!array_key_exists('serviceId', $postData) || !array_key_exists('serviceName', $postData) || !array_key_exists('serviceIp', $postData) || count($postData) != 3) {
-    return NULL;
+if (!array_key_exists('serviceId', $postData) 
+        || !array_key_exists('serviceName', $postData) 
+        || !array_key_exists('serviceIp', $postData) 
+        || !array_key_exists('servicePort', $postData) || count($postData) != 4) {
+    return;
 } else {
     $content = json_encode($postData);
 }
@@ -19,8 +22,10 @@ if (!array_key_exists('serviceId', $postData) || !array_key_exists('serviceName'
 if (file_exists($filename) && abs(filesize($filename)) > 0) {
     $arr = (array) json_decode(file_get_contents($filename));
     foreach ($arr as $row) {
-        if ($row->serviceIp == $postData['serviceIp'])
-            return NULL;
+        if ($row->serviceIp == $postData['serviceIp'] 
+                && $row->servicePort == $postData['servicePort']) {
+            return;
+        }
     }
 
     array_push($arr, $postData);
@@ -30,4 +35,4 @@ if (file_exists($filename) && abs(filesize($filename)) > 0) {
 }
 
 file_put_contents($filename, $content);
-?>
+
