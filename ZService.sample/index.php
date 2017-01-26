@@ -7,8 +7,14 @@ require_once 'Config/SqlDef.php';
 require_once 'ZConnect/PDO.php';
 
 //Enter
-$ZData = json_decode(file_get_contents("php://input"));
-if(is_null($ZData) || empty($ZData)){
+$ZData = file_get_contents("php://input");
+if ($ZData == 'Z_TEST_TIMESTAMP') {
+//    sleep(1);
+    echo microtime(true);
+    return;
+}
+$ZData = json_decode($ZData);
+if (is_null($ZData) || empty($ZData)) {
     echo 'Z_MSG_NO_POSTDATA';
     return;
 }
