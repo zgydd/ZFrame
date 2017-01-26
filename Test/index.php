@@ -2,40 +2,65 @@
 
 //Test project
 
-function getRequireTimeStamp($url) {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-    $response = curl_exec($ch);
-    curl_close($ch);
-    return $response;
-}
+require_once 'routeSelector.php';
 
-$urls = array('http://127.0.0.1:3000', 'http://127.0.0.1:5000', 'http://127.0.0.1:10000', 'http://127.0.0.1:20000', 'http://127.0.0.1:20001', 'http://127.0.0.1:9999');
+//echo '<>' date("Y-m-d H:i:s", time());
+$routeSelector = new \ZFrame_Common\ZRouteSelector();
 
-$result = array();
+$chooseRoute = $routeSelector->selectRoute();
 
-echo date("Y-m-d H:i:s", time());
-echo '<br/>';
-foreach ($urls as $row) {
-    $start = microtime();
-    $ret = getRequireTimeStamp($row);
-    $end = microtime();
-    if($ret && $ret === 'Z_MSG_NO_POSTDATA'){
-        array_push($result, ["timestamp"=>($end-$start),"host"=>$row]);
-    }  else {
-//        array_push($result, $ret);        
-    }   
-}
-echo '<br/>';
-echo date("Y-m-d H:i:s", time());
-echo '<br/>';
-var_dump($result);
+echo '<br/>' . $chooseRoute . '<br/><br/>';
+
+//function getRequireTimeStamp($url) {
+//    $test_ch = curl_init();
+//    curl_setopt($test_ch, CURLOPT_URL, $url);
+//    curl_setopt($test_ch, CURLOPT_RETURNTRANSFER, 1);
+//    
+//    curl_setopt($test_ch, CURLOPT_TIMEOUT_MS, 300);
+//    curl_setopt($test_ch, CURLOPT_CONNECTTIMEOUT_MS, 300);
+//    
+//    curl_setopt($test_ch, CURLOPT_POSTFIELDS, 'Z_TEST_TIMESTAMP');
+//    $response = curl_exec($test_ch);
+//    curl_close($test_ch);
+//    return $response;
+//}
+//
+//$urls = array('http://127.0.0.1:3000', 'http://127.0.0.1:5000', 'http://127.0.0.1:10000', 'http://127.0.0.1:20000', 'http://127.0.0.1:20001', 'http://127.0.0.1:9999');
+//$minTimeStamp = 9.9;
+//$choseRoute = '';
+//
+//$result = array();
+//
+//echo date("Y-m-d H:i:s", time());
+//echo '<br/>';
+//foreach ($urls as $row) {
+//    $start = microtime(true);
+//    $ret = getRequireTimeStamp($row);
+//    if(!$ret){
+//        //Remove this route
+//    }  else {
+//        if($minTimeStamp > ($ret-$start)){
+//            $choseRoute = $row;
+//        }
+//    }
+////    if (!$ret) {
+////        echo 'false';
+////    } else {
+////        echo '<br/>' . ($ret - $start);
+////    }
+////    echo '<br/>#########'.$ret.'##########<br/>';
+//    
+//}
+//echo '<br/>';
+//echo date("Y-m-d H:i:s", time());
+//echo '<br/>';
+//echo $choseRoute;
+////echo '<br/>';
+////var_dump($result);
 
 
 
-/*
+
 $url = 'http://127.0.0.1:3000';
 
 $data = new stdClass();
@@ -104,4 +129,4 @@ switch ($response) {
 }
 //Data Check
 echo '<br/>##################IndexLine#################<br/>';
-*/
+
