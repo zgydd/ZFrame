@@ -1,1 +1,1 @@
-[{"routeFlg":"Z_ROUTE_1","builderIp":"127.0.0.1","builderPort":"5000"},{"routeFlg":"Z_ROUTE_0","builderIp":"127.0.0.1","builderPort":"8888"}]
+[{"routeFlg":"Z_ROUTE_1","serviceIp":"127.0.0.1","servicePort":"5000"},{"routeFlg":"Z_ROUTE_0","serviceIp":"127.0.0.1","servicePort":"8888"}]

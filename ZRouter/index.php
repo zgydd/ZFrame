@@ -31,7 +31,13 @@ function getLocalIP() {
 //Enter
 $routeFlg = '';
 try {
-    $ZData = json_decode(file_get_contents("php://input"));
+    $ZData = file_get_contents("php://input");
+    if ($ZData == 'Z_TEST_TIMESTAMP') {
+//        sleep(1);
+        echo microtime(true);
+        return;
+    }
+    $ZData = json_decode($ZData);
     if (is_null($ZData) || empty($ZData)) {
         echo 'Z_MSG_NO_POSTDATA';
         return;
@@ -66,7 +72,7 @@ if (file_exists($filename) && abs(filesize($filename)) > 0) {
     $arr = (array) json_decode(file_get_contents($filename));
     foreach ($arr as $row) {
         if ($routeFlg === $row->routeFlg) {
-            array_push($requiredAddress, 'http://' . $row->builderIp . ':' . $row->builderPort);
+            array_push($requiredAddress, 'http://' . $row->serviceIp . ':' . $row->servicePort);
         }
     }
 
