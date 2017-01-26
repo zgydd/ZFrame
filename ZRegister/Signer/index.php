@@ -5,8 +5,21 @@
 
 $filename = '../map.json';
 $ZData = file_get_contents("php://input");
+if ($ZData == 'Z_TEST_TIMESTAMP') {
+//    sleep(1);
+    echo microtime(true);
+    return;
+}
+if (is_null($ZData) || empty($ZData)) {
+    echo 'Z_MSG_NO_POSTDATA';
+    return;
+}
 //Check format
 $postData = (array) json_decode($ZData);
+if (is_null($ZData) || empty($ZData)) {
+    echo 'Z_MSG_NO_POSTDATA';
+    return;
+}
 
 //$content = '';
 //$content .= $postData['serviceId'] . ',' . $postData['serviceName'] . ',' . $postData['serviceIp'];
