@@ -1,0 +1,19 @@
+[{
+        "serviceIp": "127.0.0.1",
+        "servicePort": "3000"
+    }, {
+        "serviceIp": "127.0.0.1",
+        "servicePort": "5000"
+    }, {
+        "serviceIp": "127.0.0.1",
+        "servicePort": "10000"
+    }, {
+        "serviceIp": "127.0.0.1",
+        "servicePort": "20000"
+    }, {
+        "serviceIp": "127.0.0.1",
+        "servicePort": "20001"
+    }, {
+        "serviceIp": "127.0.0.1",
+        "servicePort": "9999"
+    }]
