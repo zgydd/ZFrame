@@ -16,4 +16,7 @@
     }, {
         "serviceIp": "127.0.0.1",
         "servicePort": "9999"
+    }, {
+        "serviceIp": "127.0.0.1",
+        "servicePort": "50000"
     }]
