@@ -70,7 +70,7 @@ $data->uuid = 'Z_localhost_' . time();
 $data->head = new stdClass();
 $data->head->routeFlg = 'Z_ROUTE_1';
 $data->head->modelFlg = 'Z_MODEL_0';
-$data->head->servicesList = array();
+$data->head->servicesList = array('Z_SRV_0');
 $data->head->dataFrom = array('localhost');
 $data->head->dataTo = NULL;
 
