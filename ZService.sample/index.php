@@ -9,7 +9,7 @@ require_once 'ZConnect/PDO.php';
 //Enter
 $ZData = file_get_contents("php://input");
 if ($ZData == 'Z_TEST_TIMESTAMP') {
-//    sleep(1);
+    //sleep(1);
     echo microtime(true);
     return;
 }
