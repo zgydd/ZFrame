@@ -5,11 +5,11 @@
 require_once 'routeSelector.php';
 
 //echo '<>' date("Y-m-d H:i:s", time());
-$routeSelector = new \ZFrame_Common\ZRouteSelector();
-
-$chooseRoute = $routeSelector->selectRoute();
-
-echo '<br/>' . $chooseRoute . '<br/><br/>';
+//$routeSelector = new \ZFrame_Common\ZRouteSelector();
+//
+//$chooseRoute = $routeSelector->selectRoute();
+//
+//echo '<br/>' . $chooseRoute . '<br/><br/>';
 
 //function getRequireTimeStamp($url) {
 //    $test_ch = curl_init();
