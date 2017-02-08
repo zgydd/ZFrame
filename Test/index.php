@@ -1,16 +1,12 @@
 <?php
 
 //Test project
-
-require_once 'routeSelector.php';
-
 //echo '<>' date("Y-m-d H:i:s", time());
 //$routeSelector = new \ZFrame_Common\ZRouteSelector();
 //
 //$chooseRoute = $routeSelector->selectRoute();
 //
 //echo '<br/>' . $chooseRoute . '<br/><br/>';
-
 //function getRequireTimeStamp($url) {
 //    $test_ch = curl_init();
 //    curl_setopt($test_ch, CURLOPT_URL, $url);
@@ -58,10 +54,37 @@ require_once 'routeSelector.php';
 ////echo '<br/>';
 ////var_dump($result);
 
+$preg = "/\A(http|https|ftp)\:\/\/((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
+$url = NULL;
 
+//Load Libra
+if (file_exists('Libra/routeSelecter.php') && abs(filesize('Libra/routeSelecter.php')) > 0) {
+    require_once 'Libra/routeSelecter.php';
+    $routeSelecter = new \Lucy\Libra();
+    $url = $routeSelecter->selectRoute();
+} else {
+    //$url = 'http://127.0.0.1:3000';
+}
+if (is_null($url)) {
+    return;
+}
 
+$tmpArr = explode(':', $url);
 
-$url = 'http://127.0.0.1:3000';
+if (isset($tmpArr[2])) {
+    if (!preg_match($preg, $tmpArr[0] . ':' . $tmpArr[1])) {
+        echo $url;
+        return;
+    } else {
+        if ($tmpArr[2] <= 0 || $tmpArr[2] > 65535) {
+            echo $url;
+            return;
+        }
+    }
+} else {
+    echo $url;
+    return;
+}
 
 $data = new stdClass();
 
@@ -79,7 +102,7 @@ $data->entity->body = '1';
 
 $data = json_encode($data);
 
-echo var_dump($data);
+var_dump($data);
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
