@@ -2,32 +2,6 @@
 
 // Builder logical
 // Initlize    20170124    Joe
-function getLocalIP() {
-    $preg = "/\A((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
-//    exec("ipconfig", $out, $stats);
-//    if (!empty($out)) {
-//        foreach ($out AS $row) {
-//            if (strstr($row, "IP") && strstr($row, ":") && !strstr($row, "IPv6")) {
-//                $tmpIp = explode(":", $row);
-//                if (preg_match($preg, trim($tmpIp[1]))) {
-//                    return trim($tmpIp[1]);
-//                }
-//            }
-//        }
-//    }
-    exec("ifconfig", $out, $stats);
-    if (!empty($out)) {
-        if (isset($out[1]) && strstr($out[1], 'addr:')) {
-            $tmpArray = explode(":", $out[1]);
-            $tmpIp = explode(" ", $tmpArray[1]);
-            if (preg_match($preg, trim($tmpIp[0]))) {
-                return trim($tmpIp[0]);
-            }
-        }
-    }
-    return '127.0.0.1';
-}
-
 //Enter
 $ZData = file_get_contents("php://input");
 if ($ZData == 'Z_TEST_TIMESTAMP') {
@@ -42,69 +16,85 @@ if (is_null($ZData) || empty($ZData)) {
 }
 
 //Choose route
-$filename = 'map.json';
-$url = '';
-if (file_exists($filename) && abs(filesize($filename)) > 0) {
-    $arr = (array) json_decode(file_get_contents($filename));
-    //How to choose a route
-//    foreach ($arr as $row) {
-//    }
-    $url = 'http://' . $arr[0]->serviceIp . ':' . $arr[0]->servicePort;
-} else {
-    
-}
+$preg = "/\A(http|https|ftp)\:\/\/((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
+$url = NULL;
 
-if (empty($url)) {
-    echo 'No Route to Register!!';
+//Load Libra
+if (file_exists('Libra/routeSelecter.php') && abs(filesize('Libra/routeSelecter.php')) > 0) {
+    require_once 'Libra/routeSelecter.php';
+    $routeRules = new \stdClass();
+    $routeSelecter = new \Lucy\Libra();
+    $url = $routeSelecter->selectRoute();
+} else {
+    //$url = 'http://127.0.0.1:5000';
+}
+if (is_null($url)) {
+    echo 'err_route_005';
     return;
 }
+
+$tmpArr = explode(':', $url);
+
+if (isset($tmpArr[2])) {
+    if (!preg_match($preg, $tmpArr[0] . ':' . $tmpArr[1])) {
+        echo $url;
+        return;
+    } else {
+        if ($tmpArr[2] <= 0 || $tmpArr[2] > 65535) {
+            echo 'err_route_999';
+            return;
+        }
+    }
+} else {
+    echo 'err_route_999';
+    return;
+}
+
 //preg_match a Ip address
 //$url = 'http://127.0.0.1:20001';
 //CheckData
-
-
-array_push($ZData->head->dataFrom, getLocalIP());
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($ZData));
-$response = curl_exec($ch);
-if (curl_errno($ch)) {
-    print curl_error($ch);
+if (array_key_exists('dataFrom', $ZData->head)) {
+    if (gettype($ZData->head->dataFrom) === 'array') {
+        array_push($ZData->head->dataFrom, _getLocalIP());
+    } else {
+//        echo 'wrn_route_001';
+    }
+} else {
+//    echo 'wrn_route_001';
 }
-curl_close($ch);
 
+try {
+    echo '<br/>##################BuilderLine#################<br/>';
+    echo '--Start curl at ' . microtime(TRUE) . '<br/>';
+    echo '--Target to ' . $url . '<br/>';
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($ZData));
+    $response = curl_exec($ch);
+    if (!$response) {
+        echo 'Unreched--------------------------------';
+    }
 
+    if (curl_errno($ch)) {
+        print curl_error($ch);
+    }
+    echo '--Curl closed at ' . microtime(TRUE) . '<br/>';
 
-////Route Check
-//echo '<br/>##################BuilderLine#################<br/>';
-//echo $response;
-//echo '<br/>##################BuilderLine#################<br/>';
-//In Route
-$resultZData = json_decode($response);
-array_pop($resultZData->head->dataTo);
-echo json_encode($resultZData);
+//    $resultZData = json_decode($response);
+//    array_pop($resultZData->head->dataTo);
+//    echo json_encode($resultZData);
 
-////Data Check
-//$dbData = json_decode($response);
-//
-//foreach ($dbData->user as $row) {
-//    foreach ($row as $col) {
-//        echo $col . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-//    }
-//    //var_dump($row);
-//    echo '<br/>';
-//}
-//echo '<br/>';
-//echo '<br/>';
-//foreach ($dbData->syohinInner as $row) {
-//    foreach ($row as $col) {
-//        echo $col . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-//    }
-//    //var_dump($row);
-//    echo '<br/>';
-//}
-
+    echo $response;
+    echo '--Feed back at ' . microtime(TRUE) . '<br/>';
+    echo '<br/>##################BuilderLine#################<br/>';
+} catch (Exception $ex) {
+    echo 'err_route_006';
+    return;
+} finally {
+    if (!is_null($ch)) {
+        curl_close($ch);
+    }
+}
 

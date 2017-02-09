@@ -18,8 +18,8 @@ class LIBRA_CONSTANT {
     public function __construct() {
         $this->_MAPDEFINATION = new \stdClass();
         $this->_MAPDEFINATION->fileName = 'Libra/map.json';
-        $this->_MAPDEFINATION->ipKey = 'serviceIp';
-        $this->_MAPDEFINATION->portKey = 'servicePort';
+        $this->_MAPDEFINATION->ipKey = 'registerIp';
+        $this->_MAPDEFINATION->portKey = 'registerPort';
 
         $this->_MAPDEFINATION->errUnFormatableData = 'unformatable data';
         $this->_MAPDEFINATION->errEmptyRecord = 'no route in map';

@@ -7,8 +7,8 @@
 
 namespace Lucy;
 
-require_once 'commFunc.php';
-require_once 'Constant.php';
+require_once 'Libra/commFunc.php';
+require_once 'Libra/Constant.php';
 
 class Libra {
 
