@@ -34,9 +34,9 @@ function _checkRules($record, $rules) {
 
     switch ($p_rules['operator']) {
         case 1:
-            $arrCondition = explode(',', $p_rules['condition']);
+            $arrCondition = explode(',', $p_record[$p_rules['target']]);
             foreach ($arrCondition as $condition) {
-                if ($p_record[$p_rules['target']] == $condition) {
+                if ($p_rules['condition'] == $condition) {
                     return 1;
                 }
             }

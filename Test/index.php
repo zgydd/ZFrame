@@ -88,12 +88,12 @@ if (isset($tmpArr[2])) {
 
 $data = new stdClass();
 
-$data->uuid = 'Z_localhost_' . time();
+$data->uuid = 'Z_localhost_' . microtime(true);
 
 $data->head = new stdClass();
 $data->head->routeFlg = 'Z_ROUTE_1';
 $data->head->modelFlg = 'Z_MODEL_0';
-$data->head->servicesList = array('Z_SRV_0');
+$data->head->servicesList = array('Z_SRV_0', 'Z_SRV_1');
 $data->head->dataFrom = array('localhost');
 $data->head->dataTo = NULL;
 
@@ -101,9 +101,11 @@ $data->entity = new stdClass();
 $data->entity->body = '1';
 
 $data = json_encode($data);
-
+echo 'Post data<br/>';
 var_dump($data);
-
+echo '<br/>##################IndexLine#################<br/>';
+echo '--Start curl at ' . microtime(TRUE) . '<br/>';
+echo '--Target to ' . $url . '<br/>';
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -114,42 +116,44 @@ if (curl_errno($ch)) {
     print curl_error($ch);
 }
 curl_close($ch);
-echo '<br/>##################IndexLine#################<br/>';
-//echo $response;
-switch ($response) {
-    case 'err_route_001':
-    case 'err_route_002':
-    case 'err_route_003':
-    case 'err_route_004':
-    case 'err_route_005':
-    case 'err_route_006':
-        echo $response;
-        break;
-    default :
-//        var_dump($response);
-        $dbData = json_decode($response);
-
-        var_dump($dbData->head);
-        echo '<br/>';
-        foreach ($dbData->entity->user as $row) {
-            foreach ($row as $col) {
-                echo $col . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-            }
-            //var_dump($row);
-            echo '<br/>';
-        }
-        echo '<br/>';
-        foreach ($dbData->entity->syohinInner as $row) {
-            foreach ($row as $col) {
-                echo $col . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-            }
-            //var_dump($row);
-            echo '<br/>';
-        }
-        echo '<br/>';
-        var_dump($dbData->routeLine);
-        break;
-}
+echo '--Curl closed at ' . microtime(TRUE) . '<br/>';
+echo $response;
+//switch ($response) {
+//    case 'err_route_001':
+//    case 'err_route_002':
+//    case 'err_route_003':
+//    case 'err_route_004':
+//    case 'err_route_005':
+//    case 'err_route_006':
+//    case 'err_route_999':
+//        echo $response;
+//        break;
+//    default :
+//        echo $response;
+////        $dbData = json_decode($response);
+////
+////        var_dump($dbData->head);
+////        echo '<br/>';
+////        foreach ($dbData->entity->user as $row) {
+////            foreach ($row as $col) {
+////                echo $col . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+////            }
+////            //var_dump($row);
+////            echo '<br/>';
+////        }
+////        echo '<br/>';
+////        foreach ($dbData->entity->syohinInner as $row) {
+////            foreach ($row as $col) {
+////                echo $col . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+////            }
+////            //var_dump($row);
+////            echo '<br/>';
+////        }
+////        echo '<br/>';
+////        var_dump($dbData->routeLine);
+////        break;
+//}
 //Data Check
+echo '--Feed back at ' . microtime(TRUE) . '<br/>';
 echo '<br/>##################IndexLine#################<br/>';
 
