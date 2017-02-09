@@ -18,18 +18,18 @@ if (is_null($ZData) || empty($ZData)) {
     echo 'Z_MSG_NO_POSTDATA';
     return;
 }
-//$ZData = json_decode(file_get_contents("php://input"));
-//if (empty($ZData)) {
-//    echo 'No post data!';
-//    return;
-//}
 
+echo '<br/>##################ServiceLine#################<br/>';
+echo '--Start init connection at ' . microtime(TRUE) . '<br/>';
 $con = new \ZFrame_Service\ZConnect();
+echo '--Start get pdo at ' . microtime(TRUE) . '<br/>';
 $pdo = $con->_getPdo();
-
+echo '--Select user at ' . microtime(TRUE) . '<br/>';
 $userById = $con->getUserById($ZData->entity->body);
+echo '--Get data at ' . microtime(TRUE) . '<br/>';
 $inner = $con->getInnerJoin();
 
+echo '--Create result at ' . microtime(TRUE) . '<br/>';
 $result = new \stdClass();
 $result->user=$userById;
 $result->syohinInner=$inner;
@@ -39,14 +39,15 @@ $ZData->routeLine = $ZData->head->dataFrom;
 $ZData->head->dataFrom = NULL;
 $ZData->entity = $result;
 
-////Route Check
-//echo '<br/>##################ServiceLine#################<br/>';
-//echo var_dump($result);
-//echo '<br/>##################ServiceLine#################<br/>';
-
-//Data Check
+//Route Check
 echo json_encode($ZData);
-//echo '<br/>';
-//print_r($ZData);
+echo '<br/>';
+echo '--Feed back at ' . microtime(TRUE) . '<br/>';
+echo '<br/>##################ServiceLine#################<br/>';
+
+////Data Check
+//echo json_encode($ZData);
+////echo '<br/>';
+////print_r($ZData);
 
 $con = NULL;
