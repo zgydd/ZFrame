@@ -2,32 +2,7 @@
 
 // Router logical
 // Initlize    20170124    Joe
-function getLocalIP() {
-    $preg = "/\A((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
-//    exec("ipconfig", $out, $stats);
-//    if (!empty($out)) {
-//        foreach ($out AS $row) {
-//            if (strstr($row, "IP") && strstr($row, ":") && !strstr($row, "IPv6")) {
-//                $tmpIp = explode(":", $row);
-//                if (preg_match($preg, trim($tmpIp[1]))) {
-//                    return trim($tmpIp[1]);
-//                }
-//            }
-//        }
-//    }
-    exec("ifconfig", $out, $stats);
-    if (!empty($out)) {
-        if (isset($out[1]) && strstr($out[1], 'addr:')) {
-            $tmpArray = explode(":", $out[1]);
-            $tmpIp = explode(" ", $tmpArray[1]);
-            if (preg_match($preg, trim($tmpIp[0]))) {
-                return trim($tmpIp[0]);
-            }
-        }
-    }
-    return '127.0.0.1';
-}
-
+require_once 'Constant.php';
 //Enter
 $routeFlg = '';
 try {
@@ -46,6 +21,7 @@ try {
     echo 'err_route_001';
     return;
 }
+
 switch (true) {
     case (!array_key_exists('head', $ZData)):
         echo 'err_route_002';
@@ -63,42 +39,49 @@ if (empty($routeFlg)) {
 }
 
 //Choose route
-$filename = 'map.json';
-$requiredAddress = array();
-$url = '';
+$preg = "/\A(http|https|ftp)\:\/\/((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
+$url = NULL;
 
+//Load Libra
+if (file_exists('Libra/routeSelecter.php') && abs(filesize('Libra/routeSelecter.php')) > 0) {
+    require_once 'Libra/routeSelecter.php';
+    $routeRules = new \stdClass();
+    $routeRules->target = $_CONSTANT_ROUTE_SELECT_TARGET;
+    $routeRules->operator = 1;
+    $routeRules->condition = $routeFlg;
+    $routeSelecter = new \Lucy\Libra($routeRules);
+    $url = $routeSelecter->selectRoute();
+} else {
+    //$url = 'http://127.0.0.1:5000';
+}
+if (is_null($url)) {
+    echo 'err_route_005';
+    return;
+}
 
-if (file_exists($filename) && abs(filesize($filename)) > 0) {
-    $arr = (array) json_decode(file_get_contents($filename));
-    foreach ($arr as $row) {
-        if ($routeFlg === $row->routeFlg) {
-            array_push($requiredAddress, 'http://' . $row->serviceIp . ':' . $row->servicePort);
+$tmpArr = explode(':', $url);
+
+if (isset($tmpArr[2])) {
+    if (!preg_match($preg, $tmpArr[0] . ':' . $tmpArr[1])) {
+        echo $url;
+        return;
+    } else {
+        if ($tmpArr[2] <= 0 || $tmpArr[2] > 65535) {
+            echo 'err_route_999';
+            return;
         }
     }
-
-    if (count($requiredAddress) === 0) {
-        echo 'err_route_005';
-        return;
-    }
-    //How to choose a route
-//    foreach ($requiredAddress as $row) {
-//    }
-    $url = $requiredAddress[0];
 } else {
-    echo 'err_route_005';
+    echo 'err_route_999';
     return;
 }
 
-if (empty($url)) {
-    echo 'err_route_005';
-    return;
-}
 //preg_match a Ip address
 //$url = 'http://127.0.0.1:20001';
 //CheckData
 if (array_key_exists('dataFrom', $ZData->head)) {
     if (gettype($ZData->head->dataFrom) === 'array') {
-        array_push($ZData->head->dataFrom, getLocalIP());
+        array_push($ZData->head->dataFrom, _getLocalIP());
     } else {
 //        echo 'wrn_route_001';
     }
@@ -108,6 +91,9 @@ if (array_key_exists('dataFrom', $ZData->head)) {
 
 
 try {
+    echo '<br/>##################RouterLine#################<br/>';
+    echo '--Start curl at ' . microtime(TRUE) . '<br/>';
+    echo '--Target to ' . $url . '<br/>';
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -121,20 +107,19 @@ try {
     if (curl_errno($ch)) {
         print curl_error($ch);
     }
+    echo '--Curl closed at ' . microtime(TRUE) . '<br/>';
 
-//    //Route Check
-//    echo '<br/>##################RouterLine#################<br/>';
-//    echo $response;
-//    echo '<br/>##################RouterLine#################<br/>';
-    //In Route
-    $resultZData = json_decode($response);
-    array_pop($resultZData->head->dataTo);
-    echo json_encode($resultZData);
+//    $resultZData = json_decode($response);
+//    array_pop($resultZData->head->dataTo);
+//    echo json_encode($resultZData);
+    echo $response;
+    echo '--Feed back at ' . microtime(TRUE) . '<br/>';
+    echo '<br/>##################RouterLine#################<br/>';
 } catch (Exception $ex) {
     echo 'err_route_006';
     return;
 } finally {
-    if (!\is_null($ch)) {
+    if (!is_null($ch)) {
         curl_close($ch);
     }
 }
