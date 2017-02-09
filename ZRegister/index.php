@@ -2,107 +2,136 @@
 
 // Register logical
 // Initlize    20170124    Joe
-function getLocalIP() {
-    $preg = "/\A((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
-//    exec("ipconfig", $out, $stats);
-//    if (!empty($out)) {
-//        foreach ($out AS $row) {
-//            if (strstr($row, "IP") && strstr($row, ":") && !strstr($row, "IPv6")) {
-//                $tmpIp = explode(":", $row);
-//                if (preg_match($preg, trim($tmpIp[1]))) {
-//                    return trim($tmpIp[1]);
-//                }
-//            }
-//        }
-//    }
-    exec("ifconfig", $out, $stats);
-    if (!empty($out)) {
-        if (isset($out[1]) && strstr($out[1], 'addr:')) {
-            $tmpArray = explode(":", $out[1]);
-            $tmpIp = explode(" ", $tmpArray[1]);
-            if (preg_match($preg, trim($tmpIp[0]))) {
-                return trim($tmpIp[0]);
+require_once 'Constant.php';
+
+function chooseServicesRoute($serviceMark, $selectTarget) {
+    $preg = "/\A(http|https|ftp)\:\/\/((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
+    $result = new \stdClass();
+    $result->service = $serviceMark;
+    $result->url = NULL;
+
+    //Load Libra
+    if (file_exists('Libra/routeSelecter.php') && abs(filesize('Libra/routeSelecter.php')) > 0) {
+        require_once 'Libra/routeSelecter.php';
+        $routeRules = new \stdClass();
+        $routeRules->target = $selectTarget;
+        $routeRules->operator = 1;
+        $routeRules->condition = $serviceMark;
+        $routeSelecter = new \Lucy\Libra($routeRules);
+        $result->url = $routeSelecter->selectRoute();
+    } else {
+        $result->url = 'UnReach';
+    }
+
+    $tmpArr = explode(':', $result->url);
+
+    if (isset($tmpArr[2])) {
+        if (!preg_match($preg, $tmpArr[0] . ':' . $tmpArr[1])) {
+            $result->url = 'UnFormat IP';
+        } else {
+            if ($tmpArr[2] <= 0 || $tmpArr[2] > 65535) {
+                $result->url = 'UnFormat Port';
             }
         }
+    } else {
+        
     }
-    return '127.0.0.1';
+
+    return $result;
 }
 
 //Enter
-$ZData = file_get_contents("php://input");
-if ($ZData == 'Z_TEST_TIMESTAMP') {
-//    sleep(1);
-    echo microtime(true);
-    return;
-}
-$ZData = json_decode($ZData);
-if (is_null($ZData) || empty($ZData)) {
-    echo 'Z_MSG_NO_POSTDATA';
+$serviceFlg = '';
+try {
+    $ZData = file_get_contents("php://input");
+    if ($ZData == 'Z_TEST_TIMESTAMP') {
+        //sleep(2);
+        echo microtime(true);
+        return;
+    }
+    $ZData = json_decode($ZData);
+    if (is_null($ZData) || empty($ZData)) {
+        echo 'Z_MSG_NO_POSTDATA';
+        return;
+    }
+} catch (Exception $ex) {
+    echo 'err_route_001';
     return;
 }
 
-//Choose route
-$filename = 'map.json';
-$url = '';
-if (file_exists($filename) && abs(filesize($filename)) > 0) {
-    $arr = (array) json_decode(file_get_contents($filename));
-    //How to choose a route
-//    foreach ($arr as $row) {
-//    }
-    $url = 'http://' . $arr[0]->serviceIp . ':' . $arr[0]->servicePort;
-} else {
-    
+switch (true) {
+    case (!array_key_exists('head', $ZData)):
+        echo 'err_route_002';
+        return;
+    default :
+        if (array_key_exists('servicesList', $ZData->head)) {
+            $serviceFlg = $ZData->head->servicesList;
+        }
+        break;
 }
 
-if (empty($url)) {
-    echo 'No Route to Serveices!!';
-    return NULL;
+$servicesMap = array();
+
+if (!empty($serviceFlg) && count($serviceFlg) > 0) {
+    foreach ($serviceFlg as $service) {
+        array_push($servicesMap, chooseServicesRoute($service, $_CONSTANT_ROUTE_SELECT_TARGET));
+    }
 }
 //preg_match a Ip address
 //$url = 'http://127.0.0.1:20001';
 //CheckData
-
-
-array_push($ZData->head->dataFrom, getLocalIP());
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($ZData));
-$response = curl_exec($ch);
-if (curl_errno($ch)) {
-    print curl_error($ch);
+if (array_key_exists('dataFrom', $ZData->head)) {
+    if (gettype($ZData->head->dataFrom) === 'array') {
+        array_push($ZData->head->dataFrom, _getLocalIP());
+    } else {
+//        echo 'wrn_route_001';
+    }
+} else {
+//    echo 'wrn_route_001';
 }
-curl_close($ch);
 
-////Route Check
-//echo '<br/>##################ReisterLine#################<br/>';
-//echo $response;
-//echo '<br/>##################ReisterLine#################<br/>';
-//In Route
-$resultZData = json_decode($response);
-array_pop($resultZData->head->dataTo);
-echo json_encode($resultZData);
+echo '<br/>##################ReisterLine#################<br/>';
+echo '--Start multi_curl at ' . microtime(TRUE) . '<br/>';
+$servicesHandle = array();
 
-////Data Check
-//$dbData = json_decode($response);
-//
-//foreach ($dbData->user as $row) {
-//    foreach ($row as $col) {
-//        echo $col . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-//    }
-//    //var_dump($row);
-//    echo '<br/>';
-//}
-//echo '<br/>';
-//echo '<br/>';
-//foreach ($dbData->syohinInner as $row) {
-//    foreach ($row as $col) {
-//        echo $col . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-//    }
-//    //var_dump($row);
-//    echo '<br/>';
-//}
-//
-//$jsonData = json_decode(file_get_contents('map.json'), true);
+foreach ($servicesMap as $mapRecord) {
+    echo '--Target to ' . $mapRecord->url . '<br/>';
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $mapRecord->url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($ZData));
+    array_push($servicesHandle, $ch);
+}
+
+$mh = curl_multi_init();
+
+foreach ($servicesHandle as $handle) {
+    curl_multi_add_handle($mh, $handle);
+}
+
+$active = null;
+do {
+    $mrc = curl_multi_exec($mh, $active);
+} while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+while ($active && $mrc == CURLM_OK) {
+    if (curl_multi_select($mh) != -1) {
+        do {
+            $mrc = curl_multi_exec($mh, $active);
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+    }
+}
+$response = array();
+foreach ($servicesHandle as $handle) {
+    array_push($response, curl_multi_getcontent($handle));
+    curl_multi_remove_handle($mh, $handle);
+}
+curl_multi_close($mh);
+echo '--Multi_curl closed at ' . microtime(TRUE) . '<br/>';
+
+foreach ($response as $responseRecord) {
+    echo $responseRecord;
+}
+echo '--Feed back at ' . microtime(TRUE) . '<br/>';
+echo '<br/>##################ReisterLine#################<br/>';
