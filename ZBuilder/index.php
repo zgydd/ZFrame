@@ -1,22 +1,49 @@
 <?php
 
-// Builder logical
-// Initlize    20170124    Joe
+/*
+ * Builder logical
+ * 
+ * V0.0.10     20170210    Joe
+ * Initlize    20170124    Joe
+ */
+require_once 'Constant.php';
+require_once 'commFunc.php';
+
 //Enter
-$ZData = file_get_contents("php://input");
-if ($ZData == 'Z_TEST_TIMESTAMP') {
+try {
+    $ZData = file_get_contents("php://input");
+    if ($ZData == $_CONSTANT_TIMESTAMP_TEST_FLG) {
 //    sleep(1);
-    echo microtime(true);
-    return;
-}
-$ZData = json_decode($ZData);
-if (is_null($ZData) || empty($ZData)) {
-    echo 'Z_MSG_NO_POSTDATA';
+        echo microtime(true);
+        return;
+    }
+    $ZData = json_decode($ZData);
+    if (is_null($ZData) || empty($ZData)) {
+        echo $_CONSTANT_MSG_NO_POST_DATA;
+        return;
+    }
+} catch (Exception $ex) {
+    echo $_CONSTANT_ERR_CODE_EXCEPTION_POST_DATA;
     return;
 }
 
+$modelFlg = '';
+switch (true) {
+    case (!array_key_exists('head', $ZData)):
+        echo $_CONSTANT_NOTE_CODE_NO_HEAD;
+        break;
+    case (!array_key_exists('modelFlg', (array) $ZData->head)):
+        echo $_CONSTANT_NOTE_CODE_NO_MODEL_FLG;
+        break;
+    default :
+        $modelFlg = $ZData->head->modelFlg;
+        break;
+}
+if (empty($modelFlg)) {
+    echo $_CONSTANT_NOTE_CODE_NO_MODEL_FLG_DATA;
+}
+
 //Choose route
-$preg = "/\A(http|https|ftp)\:\/\/((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
 $url = NULL;
 
 //Load Libra
@@ -26,46 +53,37 @@ if (file_exists('Libra/routeSelecter.php') && abs(filesize('Libra/routeSelecter.
     $routeSelecter = new \Lucy\Libra();
     $url = $routeSelecter->selectRoute();
 } else {
-    //$url = 'http://127.0.0.1:5000';
+    $url = $_CONSTANT_DEFAULT_TARGET_URL;
 }
 if (is_null($url)) {
-    echo 'err_route_005';
+    echo $_CONSTANT_ERR_CODE_NO_TARGET_URL;
     return;
 }
 
-$tmpArr = explode(':', $url);
-
-if (isset($tmpArr[2])) {
-    if (!preg_match($preg, $tmpArr[0] . ':' . $tmpArr[1])) {
-        echo $url;
-        return;
-    } else {
-        if ($tmpArr[2] <= 0 || $tmpArr[2] > 65535) {
-            echo 'err_route_999';
-            return;
-        }
-    }
-} else {
-    echo 'err_route_999';
+if (!_checkPostUrl($url)) {
+    echo $_CONSTANT_ERR_CODE_ILLEGAL_URL;
     return;
 }
 
-//preg_match a Ip address
-//$url = 'http://127.0.0.1:20001';
 //CheckData
-if (array_key_exists('dataFrom', $ZData->head)) {
-    if (gettype($ZData->head->dataFrom) === 'array') {
-        array_push($ZData->head->dataFrom, _getLocalIP());
+try {
+    if (array_key_exists('dataFrom', $ZData->head)) {
+        if (gettype($ZData->head->dataFrom) === 'array') {
+            array_push($ZData->head->dataFrom, _getLocalIP());
+        } else {
+            echo $_CONSTANT_WRN_CODE_ILLEGAL_FROM_PATH;
+        }
     } else {
-//        echo 'wrn_route_001';
+        echo $_CONSTANT_WRN_CODE_NO_FROM_DATA;
     }
-} else {
-//    echo 'wrn_route_001';
+} catch (Exception $ex) {
+    echo $_CONSTANT_WRN_CODE_CANT_PUSH_PATH;
 }
 
 try {
     echo '<br/>##################BuilderLine#################<br/>';
-    echo '--Start curl at ' . microtime(TRUE) . '<br/>';
+    echo _getLocalIP() . '<br/>';
+    echo '--Start curl at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
     echo '--Target to ' . $url . '<br/>';
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -74,23 +92,23 @@ try {
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($ZData));
     $response = curl_exec($ch);
     if (!$response) {
-        echo 'Unreched--------------------------------';
+        echo 'Unreched URL';
     }
 
     if (curl_errno($ch)) {
         print curl_error($ch);
     }
-    echo '--Curl closed at ' . microtime(TRUE) . '<br/>';
+    echo '--Curl closed at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
 
 //    $resultZData = json_decode($response);
 //    array_pop($resultZData->head->dataTo);
 //    echo json_encode($resultZData);
 
     echo $response;
-    echo '--Feed back at ' . microtime(TRUE) . '<br/>';
     echo '<br/>##################BuilderLine#################<br/>';
+    echo '--Feed back at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
 } catch (Exception $ex) {
-    echo 'err_route_006';
+    echo $_CONSTANT_ERR_CODE_CURL_POST_EXCEPTION;
     return;
 } finally {
     if (!is_null($ch)) {

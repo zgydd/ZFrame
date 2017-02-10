@@ -1,100 +1,83 @@
 <?php
 
-// Register logical
-// Initlize    20170124    Joe
+/*
+ * Register logical
+ * 
+ * V0.0.10     20170210    Joe
+ * Initlize    20170124    Joe
+ * 
+ */
 require_once 'Constant.php';
-
-function chooseServicesRoute($serviceMark, $selectTarget) {
-    $preg = "/\A(http|https|ftp)\:\/\/((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
-    $result = new \stdClass();
-    $result->service = $serviceMark;
-    $result->url = NULL;
-
-    //Load Libra
-    if (file_exists('Libra/routeSelecter.php') && abs(filesize('Libra/routeSelecter.php')) > 0) {
-        require_once 'Libra/routeSelecter.php';
-        $routeRules = new \stdClass();
-        $routeRules->target = $selectTarget;
-        $routeRules->operator = 1;
-        $routeRules->condition = $serviceMark;
-        $routeSelecter = new \Lucy\Libra($routeRules);
-        $result->url = $routeSelecter->selectRoute();
-    } else {
-        $result->url = 'UnReach';
-    }
-
-    $tmpArr = explode(':', $result->url);
-
-    if (isset($tmpArr[2])) {
-        if (!preg_match($preg, $tmpArr[0] . ':' . $tmpArr[1])) {
-            $result->url = 'UnFormat IP';
-        } else {
-            if ($tmpArr[2] <= 0 || $tmpArr[2] > 65535) {
-                $result->url = 'UnFormat Port';
-            }
-        }
-    } else {
-        
-    }
-
-    return $result;
-}
+require_once 'commFunc.php';
 
 //Enter
 $serviceFlg = '';
 try {
     $ZData = file_get_contents("php://input");
-    if ($ZData == 'Z_TEST_TIMESTAMP') {
+    if ($ZData == $_CONSTANT_TIMESTAMP_TEST_FLG) {
         //sleep(2);
         echo microtime(true);
         return;
     }
     $ZData = json_decode($ZData);
     if (is_null($ZData) || empty($ZData)) {
-        echo 'Z_MSG_NO_POSTDATA';
+        echo $_CONSTANT_MSG_NO_POST_DATA;
         return;
     }
 } catch (Exception $ex) {
-    echo 'err_route_001';
+    echo $_CONSTANT_ERR_CODE_EXCEPTION_POST_DATA;
     return;
 }
 
 switch (true) {
     case (!array_key_exists('head', $ZData)):
-        echo 'err_route_002';
+        echo $_CONSTANT_ERR_CODE_NO_HEAD;
+        return;
+    case (!array_key_exists('servicesList', $ZData->head)):
+        echo $_CONSTANT_ERR_CODE_NO_SERVICE_LIST;
         return;
     default :
-        if (array_key_exists('servicesList', $ZData->head)) {
-            $serviceFlg = $ZData->head->servicesList;
-        }
+        $serviceFlg = $ZData->head->servicesList;
         break;
+}
+if (empty($serviceFlg) || count($serviceFlg) <= 0) {
+    echo $_CONSTANT_ERR_CODE_NO_SERVICE_LIST_DATA;
+    return;
 }
 
 $servicesMap = array();
-
-if (!empty($serviceFlg) && count($serviceFlg) > 0) {
-    foreach ($serviceFlg as $service) {
-        array_push($servicesMap, chooseServicesRoute($service, $_CONSTANT_ROUTE_SELECT_TARGET));
-    }
+foreach ($serviceFlg as $service) {
+    array_push($servicesMap, _chooseServicesRoute_($service, $_CONSTANT_ROUTE_SELECT_TARGET));
 }
-//preg_match a Ip address
-//$url = 'http://127.0.0.1:20001';
 //CheckData
-if (array_key_exists('dataFrom', $ZData->head)) {
-    if (gettype($ZData->head->dataFrom) === 'array') {
-        array_push($ZData->head->dataFrom, _getLocalIP());
+try {
+    if (array_key_exists('dataFrom', $ZData->head)) {
+        if (gettype($ZData->head->dataFrom) === 'array') {
+            array_push($ZData->head->dataFrom, _getLocalIP());
+        } else {
+            echo $_CONSTANT_WRN_CODE_ILLEGAL_FROM_PATH;
+        }
     } else {
-//        echo 'wrn_route_001';
+        echo $_CONSTANT_WRN_CODE_NO_FROM_DATA;
     }
-} else {
-//    echo 'wrn_route_001';
+} catch (Exception $ex) {
+    echo $_CONSTANT_WRN_CODE_CANT_PUSH_PATH;
 }
 
 echo '<br/>##################ReisterLine#################<br/>';
-echo '--Start multi_curl at ' . microtime(TRUE) . '<br/>';
+echo _getLocalIP() . '<br/>';
+echo '--Create multi_curl\'s handle at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
 $servicesHandle = array();
 
 foreach ($servicesMap as $mapRecord) {
+    if (!property_exists($mapRecord, 'url')) {
+        echo 'XXXXXXXXXXXXX--No property \"url\" in map record!<br/>';
+        continue;
+    }
+    if (!_checkPostUrl($mapRecord->url)) {
+        echo 'XXXXXXXXXXXXX--Unformatable \"url\"(' . $mapRecord->url . ')<br/>';
+        continue;
+    }
     echo '--Target to ' . $mapRecord->url . '<br/>';
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $mapRecord->url);
@@ -104,34 +87,35 @@ foreach ($servicesMap as $mapRecord) {
     array_push($servicesHandle, $ch);
 }
 
-$mh = curl_multi_init();
+echo '--Start multi_curl at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
+$multiCurlMasterHandle = curl_multi_init();
 
 foreach ($servicesHandle as $handle) {
-    curl_multi_add_handle($mh, $handle);
+    curl_multi_add_handle($multiCurlMasterHandle, $handle);
 }
 
 $active = null;
 do {
-    $mrc = curl_multi_exec($mh, $active);
-} while ($mrc == CURLM_CALL_MULTI_PERFORM);
+    $multiCurlExecResult = curl_multi_exec($multiCurlMasterHandle, $active);
+} while ($multiCurlExecResult == CURLM_CALL_MULTI_PERFORM);
 
-while ($active && $mrc == CURLM_OK) {
-    if (curl_multi_select($mh) != -1) {
+while ($active && $multiCurlExecResult == CURLM_OK) {
+    if (curl_multi_select($multiCurlMasterHandle) != -1) {
         do {
-            $mrc = curl_multi_exec($mh, $active);
-        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            $multiCurlExecResult = curl_multi_exec($multiCurlMasterHandle, $active);
+        } while ($multiCurlExecResult == CURLM_CALL_MULTI_PERFORM);
     }
 }
 $response = array();
 foreach ($servicesHandle as $handle) {
     array_push($response, curl_multi_getcontent($handle));
-    curl_multi_remove_handle($mh, $handle);
+    curl_multi_remove_handle($multiCurlMasterHandle, $handle);
 }
-curl_multi_close($mh);
-echo '--Multi_curl closed at ' . microtime(TRUE) . '<br/>';
+curl_multi_close($multiCurlMasterHandle);
+echo '--Multi_curl closed at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
 
 foreach ($response as $responseRecord) {
     echo $responseRecord;
 }
-echo '--Feed back at ' . microtime(TRUE) . '<br/>';
 echo '<br/>##################ReisterLine#################<br/>';
+echo '--Feed back at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';

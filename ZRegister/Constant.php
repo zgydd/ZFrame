@@ -1,4 +1,26 @@
 <?php
+/*
+ * Regist constant
+ * 
+ * Initlize V0.0.10         20170210        Joe
+ * 
+ */
 
 $_CONSTANT_ROUTE_SELECT_TARGET = 'serviceType';
+$_CONSTANT_DEFAULT_TARGET_URL = 'http://127.0.0.1:20001';
+
+$_CONSTANT_TIMESTAMP_TEST_FLG = 'Z_TEST_TIMESTAMP';
+
+$_CONSTANT_MSG_NO_POST_DATA = 'No post data to register!!';
+
+$_CONSTANT_ERR_CODE_EXCEPTION_POST_DATA = 'err_regist_001';
+$_CONSTANT_ERR_CODE_NO_HEAD = 'err_regist_002';
+$_CONSTANT_ERR_CODE_NO_SERVICE_LIST = 'err_regist_003';
+$_CONSTANT_ERR_CODE_NO_SERVICE_LIST_DATA = 'err_regist_004';
+$_CONSTANT_ERR_CODE_NO_TARGET_URL = 'err_regist_005';
+$_CONSTANT_ERR_CODE_ILLEGAL_URL = 'err_regist_999';
+
+$_CONSTANT_WRN_CODE_CANT_PUSH_PATH = 'wrn_regist_001';
+$_CONSTANT_WRN_CODE_ILLEGAL_FROM_PATH = 'wrn_regist_002';
+$_CONSTANT_WRN_CODE_NO_FROM_DATA = 'wrn_regist_003';
 
