@@ -30,10 +30,11 @@ try {
 }
 
 switch (true) {
-    case (!array_key_exists('head', $ZData)):
+    case (!property_exists($ZData, 'head') || !array_key_exists('head', $ZData)):
         echo $_CONSTANT_ERR_CODE_NO_HEAD;
         return;
-    case (!array_key_exists('routeFlg', $ZData->head)):
+    case (!property_exists($ZData->head, 'routeFlg') || !array_key_exists('routeFlg', $ZData->head)):
+        var_dump($ZData);
         echo $_CONSTANT_ERR_CODE_NO_ROUTE_FLG;
         return;
     default :
