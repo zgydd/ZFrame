@@ -1,0 +1,47 @@
+nav {
+    position: fixed;
+    z-index:999;
+    line-height: 43px;
+    width:100%; 
+    top: 2px;
+    right: 0;
+    left:0;
+    background-color: #5b5b5b;    
+    opacity: 0.8;
+    padding: 0 5px;
+}
+nav a {
+    color: #ddd;
+    display: block;
+    width: 180px;
+    text-align: center;
+    top:0;
+    bottom: 0;
+}
+nav a:hover {
+    background-color: #2e2e2e;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 45px;
+    background-color: #7d7d7d;
+    text-align: right;
+    line-height: 45px;
+    padding: 0 10px;
+}
+
+#content {
+   margin: 0 auto; 
+   overflow: auto;
+   position: absolute;
+   top:45px;
+   right: 6px;
+   bottom: 45px;
+   left:5px;
+   border: solid black 1px; 
+}

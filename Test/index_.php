@@ -5,6 +5,8 @@ require_once 'commFunc.php';
 
 $url = NULL;
 
+$ZData = file_get_contents("php://input");
+
 //Load Libra
 if (file_exists('Libra/routeSelecter.php') && abs(filesize('Libra/routeSelecter.php')) > 0) {
     require_once 'Libra/routeSelecter.php';
@@ -22,20 +24,23 @@ if (!_checkPostUrl($url)) {
     return;
 }
 
-$data = new stdClass();
+if ($ZData == NULL || empty($ZData)) {
+    $data = new stdClass();
+    $data->uuid = 'Z_localhost_' . microtime(true);
 
-$data->uuid = 'Z_localhost_' . microtime(true);
+    $data->head = new stdClass();
+    $data->head->routeFlg = 'Z_ROUTE_1';
+    $data->head->modelFlg = 'Z_MODEL_0';
+    $data->head->servicesList = array('Z_SRV_0', 'Z_SRV_1');
+    $data->head->dataFrom = array('localhost');
+    $data->head->dataTo = NULL;
 
-$data->head = new stdClass();
-$data->head->routeFlg = 'Z_ROUTE_1';
-$data->head->modelFlg = 'Z_MODEL_0';
-$data->head->servicesList = array('Z_SRV_0', 'Z_SRV_1');
-$data->head->dataFrom = array('localhost');
-$data->head->dataTo = NULL;
-
-$data->entity = new stdClass();
-$data->entity->body = '1';
-
+    $data->entity = new stdClass();
+    $data->entity->body = '1';
+} else {
+    $data = json_decode($ZData);
+    $data->uuid .= microtime(true);
+}
 $data = json_encode($data);
 echo 'Post data<br/>';
 var_dump($data);
