@@ -9,10 +9,11 @@ nav {
     background-color: #5b5b5b;    
     opacity: 0.8;
     padding: 0 5px;
+    overflow: hidden;
 }
 nav a {
     color: #ddd;
-    display: block;
+    display: inline-block;
     width: 180px;
     text-align: center;
     top:0;
