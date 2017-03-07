@@ -17,8 +17,17 @@ var callFrame = function () {
 };
 
 var callInitRoles = function () {
+    $("#content").hide();
     $("#content").empty();
     $("#content").load('venders/pages/initRoles.html');
+    $("#content").fadeIn(1000);
+};
+
+var callInitThreshold = function () {
+    $("#content").hide();
+    $("#content").empty();
+    $("#content").load('venders/pages/initThreshold.html');
+    $("#content").fadeIn(1000);
 };
 
 var getSettings = function (target, data) {
@@ -46,5 +55,13 @@ var getSettings = function (target, data) {
 var subPageCallBack = function (data) {
     $("#content").empty();
     $("#content").append(data);
-}
+};
+
+
+var callAdmission = function () {
+    $("#content").hide();
+    $("#content").empty();
+    $("#content").load('venders/pages/admission.html');
+    $("#content").fadeIn(1000);
+};
 

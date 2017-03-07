@@ -1,22 +1,36 @@
-<div id="initRoles_content">
+<div id="initRoles_content" class="inside-page">
+    <div class="coverLay">
+    </div>
     <script type="text/javascript" src="venders/js/initRoles.js"></script>
-    <div class="initRoles_itemGroup">
-        <label>RolesID:</label>
-        <input type="text" id="initRoles_inputRoleID"/>            
+    <div class="initRoles_listPanel">
+        
     </div>
-    <br/>
-    <div class="initRoles_itemGroup">
-        <label>Description:</label>
-        <input type="text" id="initRoles_inputRoleDescription"/>            
-    </div>
-    <br/>
-    <div class="initRoles_itemGroup">
-        <label>Value:</label>
-        <input type="text" id="initRoles_inputRoleValue"/>            
-    </div>
-    <br/>
-    <div class="initRoles_buttonGroup">
-        <button onclick="insRole()">Add more</button>
-        <button onclick="commitRoles()">Commit</button>
+    <div class="initRoles_insertPanel">
+        <div class="item-group">
+            <label>RolesID:</label>
+            <input type="text" id="initRoles_inputRoleID"/>            
+        </div>
+        <br/>
+        <div class="item-group">
+            <label>itemID:</label>
+            <input type="text" id="initRoles_inputItemID"/>            
+        </div>
+        <br/>
+        <div class="item-group">
+            <label>Description:</label>
+            <input type="text" id="initRoles_inputRoleDescription"/>            
+        </div>
+        <br/>
+        <div class="item-group">
+            <label>Value:</label>
+            <input type="text" id="initRoles_inputRoleValue"/>            
+        </div>
+        <br/>
+        <div class="button-group">
+            <button onclick="insRole()">Add more</button>
+            <button onclick="commitRoles()">Commit</button>
+        </div>
+        <div id="tmpRoleList">
+        </div>        
     </div>
 </div>

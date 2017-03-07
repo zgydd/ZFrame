@@ -22,6 +22,13 @@ nav a {
 nav a:hover {
     background-color: #2e2e2e;
 }
+nav .left-buttons {    
+    display: inline-block;
+}
+nav .right-buttons {
+    display: block;
+    float: right;
+}
 
 footer {
     position: absolute;
@@ -44,38 +51,113 @@ footer {
     right: 6px;
     bottom: 45px;
     left:5px;
-    border: solid black 1px; 
+    /*    border: solid black 1px; */
+}
+
+.coverLay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 99;
+    background-color: #7d7d7d;
+    opacity: 0.6;
+}
+.coverLay>div {
+    display: inline-block;
+    margin: 0 auto;
+    border:  solid black 1px;
 }
 
 #content>div {
     padding: 8px;
 }
 
-#initRoles_content {
+.initRoles_listPanel {
+    display: inline-block;
+    width: 500px;
+    height: 100%;
+    border: solid black 1px;
+    border-radius: 5px;
+}
+.initRoles_listPanel>table {
+    width: 100%;
+    border: 1px #5b5b5b solid;
+    margin: 0 auto;
+}
+.initRoles_listPanel>table>tr:nth-child(even) td {
+    background-color: #ffe1fb;
+    border-bottom: 1px #5b5b5b dashed;
+}
+.initRoles_listPanel>table>tr:nth-child(odd) td {
+    background-color: #e1feff;
+    border-bottom: 1px #5b5b5b dashed;
+}
+.initRoles_listPanel>table>th {
+    text-align: center;
+    background-color: #ddd;
+}
+.initRoles_listPanel>table>tr>.num_td {
+    text-align: right;
+    padding-right: 8px;
+}
+.initRoles_listPanel>table>tr>.text_td {
+    text-align: left;
+    padding-left: 8px;
+}
+
+.initRoles_insertPanel {
+    position: fixed;
+    top:60px;
+    left: 550px;
+    border: 1px solid #7d7d7d;
+    border-radius: 5px;
+    background-color: white;
+/*    display: inline-block;
+    float: right;
+    margin-left: 20px;
+    margin-right: 20px;*/
+}
+
+.inside-page {
     display: inline-block;
     margin: 5px;
     border: 1px solid #7d7d7d;
     border-radius: 8px;
+    min-width: 1020px;    
 }
-.initRoles_itemGroup {
+.item-group {
     display: inline-block;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 3px;
     margin: 5px;
     padding: 8px;
 }
-.initRoles_itemGroup>input {
+.item-group>input {
     margin-right: 8px;
     width: 300px;
 }
-.initRoles_itemGroup>label {
+.item-group>label {
     display: inline-block;
     width: 120px;
 }
-.initRoles_buttonGroup {
+.button-group {
     margin: 5px;
     padding: 8px;
     display: inline-block;
     width: 450px;
     text-align: right;
+}
+
+#admission_assessment > div {
+    margin: 10px 15px;    
+}
+#admission_assessment > div > label {
+    display: inline-block;
+    width: 200px;    
+}
+.admission_insertPatient > button {
+    float: right;
+    margin-top: 15px;
 }

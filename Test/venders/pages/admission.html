@@ -1,0 +1,20 @@
+<div id="admission_content" class="inside-page">
+    <div class="coverLay">
+    </div>
+    <script type="text/javascript" src="venders/js/admission.js"></script>
+    <div class="admission_insertPatient">        
+        <div class="item-group">
+            <label>Patient Name:</label>
+            <input type="text" id="admission_inputPatientName"/>            
+        </div>      
+        <div class="item-group">
+            <label>Select a Role:</label>
+            <select id="selRoles" onchange="changeRoles()">
+                <option>---Select---</option>
+            </select>           
+        </div>
+        <button onclick="callCommitAdmission()">Commit</button>
+        <br/>
+        <div id="admission_assessment"></div>
+    </div>
+</div>
