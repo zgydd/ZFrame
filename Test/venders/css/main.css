@@ -14,7 +14,7 @@ nav {
 nav a {
     color: #ddd;
     display: inline-block;
-    width: 180px;
+    width: 120px;
     text-align: center;
     top:0;
     bottom: 0;
@@ -37,12 +37,45 @@ footer {
 }
 
 #content {
-   margin: 0 auto; 
-   overflow: auto;
-   position: absolute;
-   top:45px;
-   right: 6px;
-   bottom: 45px;
-   left:5px;
-   border: solid black 1px; 
+    margin: 0 auto; 
+    overflow: auto;
+    position: absolute;
+    top:45px;
+    right: 6px;
+    bottom: 45px;
+    left:5px;
+    border: solid black 1px; 
+}
+
+#content>div {
+    padding: 8px;
+}
+
+#initRoles_content {
+    display: inline-block;
+    margin: 5px;
+    border: 1px solid #7d7d7d;
+    border-radius: 8px;
+}
+.initRoles_itemGroup {
+    display: inline-block;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 8px;
+}
+.initRoles_itemGroup>input {
+    margin-right: 8px;
+    width: 300px;
+}
+.initRoles_itemGroup>label {
+    display: inline-block;
+    width: 120px;
+}
+.initRoles_buttonGroup {
+    margin: 5px;
+    padding: 8px;
+    display: inline-block;
+    width: 450px;
+    text-align: right;
 }

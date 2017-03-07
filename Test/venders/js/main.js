@@ -13,24 +13,38 @@ var callFrame = function () {
         }
     };
 //    console.log(JSON.stringify(postData));
-    var settings = {
+    $.ajax(getSettings('index_.php', postData));
+};
+
+var callInitRoles = function () {
+    $("#content").empty();
+    $("#content").load('venders/pages/initRoles.html');
+};
+
+var getSettings = function (target, data) {
+    return {
         type: "POST",
-        url: 'index_.php',
-        data: JSON.stringify(postData),
+        url: target,
+        data: JSON.stringify(data),
         //dataType: "json",
         error: function (XHR, textStatus, errorThrown) {
             console.log(XHR);
             alert("XHR=" + XHR + "\ntextStatus=" + textStatus + "\nerrorThrown=" + errorThrown);
         },
-        success: function (data) {
-            $("#content").empty();
-            $("#content").append(data);
-        },
+//        success: function (data) {
+//            $("#content").empty();
+//            console.log(data);
+//            $("#content").append('<div>' + data + '</div>');
+//        },
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Method": "*"
         }
     };
-    $.ajax(settings);
 };
+
+var subPageCallBack = function (data) {
+    $("#content").empty();
+    $("#content").append(data);
+}
 
