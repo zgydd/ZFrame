@@ -9,6 +9,10 @@
  */
 require_once 'Constant.php';
 require_once 'commFunc.php';
+require_once 'log.php';
+
+$logHandler = new CLogFileHandler("./logs/" . date('Y-m-d') . '.log');
+$log = Log::Init($logHandler, 15);
 
 //Enter
 $serviceFlg = '';
@@ -64,21 +68,22 @@ try {
     echo $_CONSTANT_WRN_CODE_CANT_PUSH_PATH;
 }
 
-echo '<br/>##################ReisterLine#################<br/>';
-echo _getLocalIP() . '<br/>';
-echo '--Create multi_curl\'s handle at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
+Log::DEBUG('##################ReisterLine#################');
+Log::DEBUG('post data' . json_encode($ZData));
+//echo _getLocalIP() . '<br/>';
+Log::DEBUG('--Create multi_curl\'s handle at ' . _formatTimeStampToMS(microtime(TRUE)));
 $servicesHandle = array();
 
 foreach ($servicesMap as $mapRecord) {
     if (!property_exists($mapRecord, 'url')) {
-        echo 'XXXXXXXXXXXXX--No property \"url\" in map record!<br/>';
+        Log::DEBUG('XXXXXXXXXXXXX--No property \"url\" in map record!');
         continue;
     }
     if (!_checkPostUrl($mapRecord->url)) {
-        echo 'XXXXXXXXXXXXX--Unformatable \"url\"(' . $mapRecord->url . ')<br/>';
+        Log::DEBUG('XXXXXXXXXXXXX--Unformatable \"url\"(' . $mapRecord->url . ')');
         continue;
     }
-    echo '--Target to ' . $mapRecord->url . '<br/>';
+    Log::DEBUG('--Target to ' . $mapRecord->url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $mapRecord->url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -87,7 +92,7 @@ foreach ($servicesMap as $mapRecord) {
     array_push($servicesHandle, $ch);
 }
 
-echo '--Start multi_curl at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
+Log::DEBUG('--Start multi_curl at ' . _formatTimeStampToMS(microtime(TRUE)));
 $multiCurlMasterHandle = curl_multi_init();
 
 foreach ($servicesHandle as $handle) {
@@ -112,10 +117,11 @@ foreach ($servicesHandle as $handle) {
     curl_multi_remove_handle($multiCurlMasterHandle, $handle);
 }
 curl_multi_close($multiCurlMasterHandle);
-echo '--Multi_curl closed at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
-
-foreach ($response as $responseRecord) {
-    echo $responseRecord;
-}
-echo '<br/>##################ReisterLine#################<br/>';
-echo '--Feed back at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
+Log::DEBUG('--Multi_curl closed at ' . _formatTimeStampToMS(microtime(TRUE)));
+Log::DEBUG('result data' . json_encode($response));
+echo json_encode($response);
+//foreach ($response as $responseRecord) {
+//    echo $responseRecord;
+//}
+Log::DEBUG('##################ReisterLine#################');
+Log::DEBUG('--Feed back at ' . _formatTimeStampToMS(microtime(TRUE)));

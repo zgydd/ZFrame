@@ -8,6 +8,10 @@
  */
 require_once 'Constant.php';
 require_once 'commFunc.php';
+require_once 'log.php';
+
+$logHandler = new CLogFileHandler("./logs/" . date('Y-m-d') . '.log');
+$log = Log::Init($logHandler, 15);
 
 //Enter
 try {
@@ -81,10 +85,11 @@ try {
 }
 
 try {
-    echo '<br/>##################BuilderLine#################<br/>';
-    echo _getLocalIP() . '<br/>';
-    echo '--Start curl at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
-    echo '--Target to ' . $url . '<br/>';
+    Log::DEBUG('##################BuilderLine#################');
+    Log::DEBUG('post data' . json_encode($ZData));
+//    echo _getLocalIP() . '<br/>';
+    Log::DEBUG('--Start curl at ' . _formatTimeStampToMS(microtime(TRUE)));
+    Log::DEBUG('--Target to ' . $url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -98,15 +103,15 @@ try {
     if (curl_errno($ch)) {
         print curl_error($ch);
     }
-    echo '--Curl closed at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
+    Log::DEBUG('--Curl closed at ' . _formatTimeStampToMS(microtime(TRUE)));
 
 //    $resultZData = json_decode($response);
 //    array_pop($resultZData->head->dataTo);
 //    echo json_encode($resultZData);
-
+    Log::DEBUG('result data' . json_encode($response));
     echo $response;
-    echo '<br/>##################BuilderLine#################<br/>';
-    echo '--Feed back at ' . _formatTimeStampToMS(microtime(TRUE)) . '<br/>';
+    Log::DEBUG('##################BuilderLine#################');
+    Log::DEBUG('--Feed back at ' . _formatTimeStampToMS(microtime(TRUE)));
 } catch (Exception $ex) {
     echo $_CONSTANT_ERR_CODE_CURL_POST_EXCEPTION;
     return;
