@@ -4,9 +4,12 @@
 // Initlize    20170124    Joe
 
 define('roles.select.all', <<<SQL
-    SELECT 
+    SELECT
+        ID,
         ROLE_ID,
+        ROLE,
         ITEM_ID,
+        ITEM,
         DESCRIPTION,
         VALUE
     FROM

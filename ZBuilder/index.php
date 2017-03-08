@@ -43,9 +43,6 @@ switch (true) {
         $modelFlg = $ZData->head->modelFlg;
         break;
 }
-if (empty($modelFlg)) {
-    echo $_CONSTANT_NOTE_CODE_NO_MODEL_FLG_DATA;
-}
 
 //Choose route
 $url = NULL;
@@ -82,6 +79,21 @@ try {
     }
 } catch (Exception $ex) {
     echo $_CONSTANT_WRN_CODE_CANT_PUSH_PATH;
+}
+
+if (empty($modelFlg)) {
+    Log::WARN($_CONSTANT_NOTE_CODE_NO_MODEL_FLG_DATA);
+} else {
+    switch ($modelFlg) {
+        case 'Z_MODEL_ADMISSION':
+            require_once 'Models/admission.php';
+            $admissionHandle = new admission($url);
+            $buildResult = $admissionHandle->main($ZData);
+            echo json_encode($buildResult);            
+            return;
+        default :
+            break;
+    }
 }
 
 try {

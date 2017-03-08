@@ -37,18 +37,12 @@ class ZConnect {
         $this->pdo = NULL;
     }
 
-    public function insertRole($roleRecord) {
-        $stat = $this->pdo->prepare(constant("roles.insert.roleRecord"));
-        return $stat->execute(array(
-                    ':roleID' => $roleRecord->roleID,
-                    ':role' => $roleRecord->role,
-                    ':itemID' => $roleRecord->itemID,
-                    ':item' => $roleRecord->item,
-                    ':description' => $roleRecord->desc,
-                    ':value' => $roleRecord->roleValue));
-//        $record = $stat->fetchAll();
-//        $stat->closeCursor();
-//        return $record;
+    public function insertPatient($patientRecord) {
+        $stat = $this->pdo->prepare(constant("patient.insert.patientRecord"));
+        $stat->execute(array(
+            ':patientName' => $patientRecord->patientName,
+            ':scoreId' => $patientRecord->currentScoreId));
+        return $this->pdo->lastInsertId();
     }
 
 }

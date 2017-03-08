@@ -86,13 +86,14 @@ footer {
     border: 1px #5b5b5b solid;
     margin: 0 auto;
 }
+.initRoles_listPanel>table>th {
+    border-bottom: 1px #5b5b5b dashed;
+}
 .initRoles_listPanel>table>tr:nth-child(even) td {
     background-color: #ffe1fb;
-    border-bottom: 1px #5b5b5b dashed;
 }
 .initRoles_listPanel>table>tr:nth-child(odd) td {
     background-color: #e1feff;
-    border-bottom: 1px #5b5b5b dashed;
 }
 .initRoles_listPanel>table>th {
     text-align: center;

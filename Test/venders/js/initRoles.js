@@ -28,8 +28,10 @@ var getRolesList = function () {
 var rolesList = [];
 var insRole = function () {
     var roleId = $('#initRoles_inputRoleID').val();
-    var itemId = $('#initRoles_inputItemID').val();
     var roleDesc = $('#initRoles_inputRoleDescription').val();
+    var itemId = $('#initRoles_inputItemID').val();
+    var itemDesc = $('#initRoles_inputItemDescription').val();
+    var desc = $('#initRoles_inputDescription').val();
     var roleValue = $('#initRoles_inputRoleValue').val();
     if (roleId === null || roleId.trim() === '') {
         alert('Role ID');
@@ -39,14 +41,19 @@ var insRole = function () {
         alert('Role Value');
         return null;
     }
-    rolesList.push({roleID: roleId, itemID:itemId, roleDesc: roleDesc, roleValue: roleValue});
+    rolesList.push({roleID: roleId, role: roleDesc, itemID: itemId, item: itemDesc, desc: desc, roleValue: roleValue});
     $('#initRoles_inputRoleValue').val('');
-    
+
     var frag = document.createDocumentFragment();
-    for(var i=0; i<rolesList.length;i++){
+    for (var i = 0; i < rolesList.length; i++) {
         frag.appendChild(document.createElement('hr'));
         var tmpLab = document.createElement('label');
         tmpLab.innerHTML = 'Role id: ' + rolesList[i].roleID;
+        frag.appendChild(tmpLab);
+        frag.appendChild(document.createElement('br'));
+        tmpLab = null;
+        tmpLab = document.createElement('label');
+        tmpLab.innerHTML = 'Role: ' + rolesList[i].role;
         frag.appendChild(tmpLab);
         frag.appendChild(document.createElement('br'));
         tmpLab = null;
@@ -56,7 +63,12 @@ var insRole = function () {
         frag.appendChild(document.createElement('br'));
         tmpLab = null;
         tmpLab = document.createElement('label');
-        tmpLab.innerHTML = 'Role Description: ' + rolesList[i].roleDesc;
+        tmpLab.innerHTML = 'Item: ' + rolesList[i].item;
+        frag.appendChild(tmpLab);
+        frag.appendChild(document.createElement('br'));
+        tmpLab = null;
+        tmpLab = document.createElement('label');
+        tmpLab.innerHTML = 'Role Description: ' + rolesList[i].desc;
         frag.appendChild(tmpLab);
         frag.appendChild(document.createElement('br'));
         tmpLab = null;
@@ -65,10 +77,10 @@ var insRole = function () {
         frag.appendChild(tmpLab);
         tmpLab = null;
         frag.appendChild(document.createElement('br'));
-    }    
-    
+    }
+
     $('#tmpRoleList').empty();
-    $('#tmpRoleList').append(frag);    
+    $('#tmpRoleList').append(frag);
 };
 var commitRoles = function () {
     var insFinish = insRole();
@@ -101,7 +113,15 @@ var successSelectCallBack = function (resultData) {
     listTable.append(th);
     th = null;
     th = document.createElement('th');
+    th.innerHTML = 'Role';
+    listTable.append(th);
+    th = null;
+    th = document.createElement('th');
     th.innerHTML = 'ItemId';
+    listTable.append(th);
+    th = null;
+    th = document.createElement('th');
+    th.innerHTML = 'Item';
     listTable.append(th);
     th = null;
     th = document.createElement('th');
@@ -122,8 +142,18 @@ var successSelectCallBack = function (resultData) {
         tr.append(td);
         td = null;
         td = document.createElement('td');
+        $(td).addClass('text_td');
+        td.innerHTML = resultMsg[i].ROLE;
+        tr.append(td);
+        td = null;
+        td = document.createElement('td');
         $(td).addClass('num_td');
         td.innerHTML = resultMsg[i].ITEM_ID;
+        tr.append(td);
+        td = null;
+        td = document.createElement('td');
+        $(td).addClass('text_td');
+        td.innerHTML = resultMsg[i].ITEM;
         tr.append(td);
         td = null;
         td = document.createElement('td');
@@ -139,7 +169,7 @@ var successSelectCallBack = function (resultData) {
     }
 
     $('.initRoles_listPanel').append(listTable);
-    
+
     $('.initRoles_listPanel').fadeIn();
     $('.initRoles_insertPanel').fadeIn();
 };
@@ -153,6 +183,10 @@ var successInsertCallBack = function (resultData) {
     getRolesList();
     $('#initRoles_inputRoleID').val('');
     $('#initRoles_inputRoleDescription').val('');
+    $('#initRoles_inputDescription').val('');
+    $('#initRoles_inputItemID').val('');
+    $('#initRoles_inputItemDescription').val('');
+    $('#initRoles_inputRoleValue').val('');
     $('#tmpRoleList').empty();
     $('.coverLay').fadeOut();
 };

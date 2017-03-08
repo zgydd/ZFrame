@@ -6,4 +6,12 @@
         "serviceType": "Z_SRV_SELECT_ROLES",
         "serviceIp": "127.0.0.1",
         "servicePort": "20101"
+    }, {
+        "serviceType": "Z_SRV_INSERT_PATIENT",
+        "serviceIp": "127.0.0.1",
+        "servicePort": "20110"
+    }, {
+        "serviceType": "Z_SRV_INSERT_SCORE",
+        "serviceIp": "127.0.0.1",
+        "servicePort": "20120"
     }]

@@ -29,7 +29,8 @@ var successSelectCallBack = function (resultData) {
         if (!tmpHash.hasOwnProperty(_m_roles[i].ROLE_ID)) {
             tmpHash[_m_roles[i].ROLE_ID] = true;
             var tmpOpt = document.createElement('option');
-            tmpOpt.innerHTML = tmpOpt.value = _m_roles[i].ROLE_ID;
+            tmpOpt.innerHTML = _m_roles[i].ROLE;
+            tmpOpt.value = _m_roles[i].ROLE_ID;
             frag.appendChild(tmpOpt);
         }
     }
@@ -49,11 +50,11 @@ var changeRoles = function () {
         if (_m_roles[i].ITEM_ID !== currentCursor) {
             currentItem = {};
             currentCursor = currentItem.id = _m_roles[i].ITEM_ID;
-            currentItem.desc = _m_roles[i].DESCRIPTION;
-            currentItem.items = [_m_roles[i].VALUE];
+            currentItem.desc = _m_roles[i].ITEM;
+            currentItem.items = [{name: _m_roles[i].DESCRIPTION, value: _m_roles[i].VALUE}];
             items.push(currentItem);
         } else {
-            currentItem.items.push(_m_roles[i].VALUE);
+            currentItem.items.push({name: _m_roles[i].DESCRIPTION, value: _m_roles[i].VALUE});
         }
     }
 
@@ -67,7 +68,8 @@ var changeRoles = function () {
         tmpEle.id = items[i].id;
         for (var j = 0; j < items[i].items.length; j++) {
             var tmpOpt = document.createElement('option');
-            tmpOpt.innerHTML = tmpOpt.value = items[i].items[j];
+            tmpOpt.innerHTML = items[i].items[j].name;
+            tmpOpt.value = items[i].items[j].value;
             tmpEle.appendChild(tmpOpt);
         }
         itemRecord.appendChild(tmpEle);
@@ -99,13 +101,12 @@ var callCommitAdmission = function () {
     });
     console.log(requestData);
 
-
     var postData = {
         uuid: 'Z_localhost_',
         head: {
             routeFlg: 'Z_ROUTE_1',
-            modelFlg: 'NULL',
-            servicesList: ['Z_SRV_INSERT_SCORE'],
+            modelFlg: 'Z_MODEL_ADMISSION',
+            servicesList: [],
             dataFrom: ['localhost']
         },
         entity: requestData
@@ -117,6 +118,15 @@ var callCommitAdmission = function () {
     $.ajax(setting);
 };
 
-var successInsertCallBack = function () {
-
+var successInsertCallBack = function (resultData) {
+    var resultMsg = JSON.parse(resultData).entity.resultData;    
+    $('.coverLay').empty();
+    $(".coverLay").append('<div>' + resultMsg + '</div>');
+    $('.coverLay').show();
+    $('.coverLay').fadeOut(1000);
+    console.log(JSON.parse(resultData));
+    
+    $('#admission_assessment').empty();
+    $('#admission_inputPatientName').val('');
+    $('#selRoles').val(0);
 };
