@@ -91,6 +91,12 @@ if (empty($modelFlg)) {
             $buildResult = $admissionHandle->main($ZData);
             echo json_encode($buildResult);            
             return;
+        case 'Z_MODEL_PU_SELECT_PATIENTS':
+            require_once 'Models/selectPUpatients.php';
+            $puPatientsHandle = new puPatients($url);
+            $buildResult = $puPatientsHandle->main($ZData);
+            echo json_encode($buildResult);            
+            return;
         default :
             break;
     }

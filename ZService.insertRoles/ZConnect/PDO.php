@@ -41,9 +41,7 @@ class ZConnect {
         $stat = $this->pdo->prepare(constant("roles.insert.roleRecord"));
         return $stat->execute(array(
                     ':roleID' => $roleRecord->roleID,
-                    ':role' => $roleRecord->role,
                     ':itemID' => $roleRecord->itemID,
-                    ':item' => $roleRecord->item,
                     ':description' => $roleRecord->desc,
                     ':value' => $roleRecord->roleValue));
 //        $record = $stat->fetchAll();

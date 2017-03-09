@@ -1,34 +1,20 @@
 'use strict';
-var callFrame = function () {
-    var postData = {
-        uuid: 'Z_localhost_',
-        head: {
-            routeFlg: 'Z_ROUTE_1',
-            modelFlg: 'Z_MODEL_0',
-            servicesList: ['Z_SRV_0', 'Z_SRV_1'],
-            dataFrom: ['localhost']
-        },
-        entity: {
-            body: '1'
-        }
-    };
-//    console.log(JSON.stringify(postData));
-    $.ajax(getSettings('index_.php', postData));
-};
-
-var callInitRoles = function () {
-    $("#content").hide();
-    $("#content").empty();
-    $("#content").load('venders/pages/initRoles.html');
-    $("#content").fadeIn(1000);
-};
-
-var callInitThreshold = function () {
-    $("#content").hide();
-    $("#content").empty();
-    $("#content").load('venders/pages/initThreshold.html');
-    $("#content").fadeIn(1000);
-};
+//var callFrame = function () {
+//    var postData = {
+//        uuid: 'Z_localhost_',
+//        head: {
+//            routeFlg: 'Z_ROUTE_1',
+//            modelFlg: 'Z_MODEL_0',
+//            servicesList: ['Z_SRV_0', 'Z_SRV_1'],
+//            dataFrom: ['localhost']
+//        },
+//        entity: {
+//            body: '1'
+//        }
+//    };
+////    console.log(JSON.stringify(postData));
+//    $.ajax(getSettings('index_.php', postData));
+//};
 
 var getSettings = function (target, data) {
     return {
@@ -58,10 +44,31 @@ var subPageCallBack = function (data) {
 };
 
 
+var callInitRoles = function () {
+    $("#content").hide();
+    $("#content").empty();
+    $("#content").load('venders/pages/initRoles.html');
+    $("#content").fadeIn(1000);
+};
+
+var callInitThreshold = function () {
+    $("#content").hide();
+    $("#content").empty();
+    $("#content").load('venders/pages/initThreshold.html');
+    $("#content").fadeIn(1000);
+};
+
 var callAdmission = function () {
     $("#content").hide();
     $("#content").empty();
     $("#content").load('venders/pages/admission.html');
     $("#content").fadeIn(1000);
 };
+
+var callDefensePU = function () {
+    $("#content").hide();
+    $("#content").empty();
+    $("#content").load('venders/pages/defensePU.html');
+    $("#content").fadeIn(1000);
+}
 

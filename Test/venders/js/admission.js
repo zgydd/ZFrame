@@ -1,3 +1,4 @@
+'use strict';
 $(document).ready(function () {
     $('.coverLay').hide();
     getRolesList();
@@ -60,6 +61,9 @@ var changeRoles = function () {
 
     var frag = document.createDocumentFragment();
     for (var i = 0; i < items.length; i++) {
+        if (i === 0) {
+            frag.appendChild(document.createElement('hr'));
+        }
         var itemRecord = document.createElement('div');
         var tmpEle = document.createElement('label');
         tmpEle.innerHTML = items[i].desc + ":";
@@ -84,10 +88,12 @@ var callCommitAdmission = function () {
     var patientName = $('#admission_inputPatientName').val();
     var selRole = $('#selRoles') ? $('#selRoles')[0].selectedIndex : null;
     if (patientName === null || patientName.trim() === '') {
+        $('#admission_inputPatientName').parent().removeClass('common-base-warn').addClass('common-base-warn');
         alert('patientName');
         return;
     }
     if (selRole === null || selRole === 0) {
+        $('#selRoles').parent().removeClass('common-base-warn').addClass('common-base-warn');
         alert('Select a Role');
         return;
     }
@@ -119,13 +125,13 @@ var callCommitAdmission = function () {
 };
 
 var successInsertCallBack = function (resultData) {
-    var resultMsg = JSON.parse(resultData).entity.resultData;    
+    var resultMsg = JSON.parse(resultData).entity.resultData;
     $('.coverLay').empty();
     $(".coverLay").append('<div>' + resultMsg + '</div>');
     $('.coverLay').show();
     $('.coverLay').fadeOut(1000);
     console.log(JSON.parse(resultData));
-    
+
     $('#admission_assessment').empty();
     $('#admission_inputPatientName').val('');
     $('#selRoles').val(0);
